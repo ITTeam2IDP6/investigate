@@ -20,6 +20,7 @@
 
     <div class="glass-card w-full max-w-md rounded-3xl shadow-2xl overflow-hidden">
         
+        <!-- Header -->
         <div class="bg-indigo-600 p-8 text-center text-white">
             <div class="inline-flex p-3 bg-white/20 rounded-full mb-4">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -30,6 +31,7 @@
             <p class="text-indigo-100 text-sm mt-1">กรุณากรอกข้อมูลเพื่อขออนุมัติเข้าใช้งาน</p>
         </div>
 
+        <!-- Form -->
         <div class="p-8 space-y-6">
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">ชื่อ-นามสกุล</label>
@@ -53,113 +55,79 @@
     </div>
 
     <script>
-        // --- ค่าคอนฟิก (ดึงมาจากโค้ดเดิมของคุณ) ---
         const LiffId = "2009632664-3vVVvlJR"; 
         const GasUrl = "https://script.google.com/macros/s/AKfycbwuQGtRMZG1LhpuM4jBKHdjDwzlENSKmqrAyWAtGKPOBrPfXeKX_AS5KIGBXgg_m3xunw/exec"; 
 
-        // ฟังก์ชันเริ่มทำงานเมื่อโหลดหน้าเว็บ
+        // 1. เริ่มการทำงาน LIFF
         async function main() {
             try {
                 await liff.init({ liffId: LiffId });
                 if (!liff.isLoggedIn()) {
-                    liff.login(); // ถ้ายังไม่ Login ให้พาไป Login ของ LINE
+                    liff.login();
                 }
             } catch (err) {
                 console.error("LIFF Init Error", err);
-                // alert("เกิดข้อผิดพลาดในการเชื่อมต่อ LINE");
             }
         }
-        main(); // สั่งให้ทำงานทันที
+        main();
 
-     const profile = await liff.getProfile();
-const data = {
-    userId: profile.userId,
-    name: document.getElementById('name').value,
-    phone: document.getElementById('phone').value,
-    pictureUrl: profile.pictureUrl // เพิ่มบรรทัดนี้เพื่อส่งรูปภาพ
-};
+        // 2. ฟังก์ชันส่งข้อมูล
+        async function submitData() {
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
+            const btn = document.getElementById('btnSubmit');
 
-    if (!name || !phone) {
-        alert("กรุณากรอกข้อมูลให้ครบถ้วนครับ");
-        return;
-    }
+            // ตรวจสอบข้อมูลว่าง
+            if (!name || !phone) {
+                alert("กรุณากรอกข้อมูลให้ครบถ้วนครับ");
+                return;
+            }
 
-    btn.disabled = true;
-    btn.innerHTML = "กำลังบันทึกข้อมูล...";
-
-    try {
-        // ดึง Profile รวมถึงรูปภาพ
-        const profile = await liff.getProfile();
-        
-        const payload = {
-            userId: profile.userId,
-            name: name,
-            phone: phone,
-            pictureUrl: profile.pictureUrl // เพิ่มการส่งรูปภาพ
-        };
-
-        const response = await fetch(GasUrl, {
-            method: "POST",
-            body: JSON.stringify(payload)
-        });
-
-        const result = await response.json();
-
-        if (result.status === 'success') {
-            alert("บันทึกข้อมูลเรียบร้อยแล้ว! ตรวจสอบรายละเอียดในช่องแชทนะครับ");
-            liff.closeWindow();
-        }
-    } catch (err) {
-        console.error(err);
-        alert("เกิดข้อผิดพลาด");
-        btn.disabled = false;
-        btn.innerHTML = "ส่งข้อมูลลงทะเบียน";
-    }
-}
-            // --- ส่วนที่เพิ่มใหม่: แสดงสถานะกำลังโหลด ---
-            btn.disabled = true; // ห้ามกดซ้ำ
+            // แสดงสถานะ Loading
+            btn.disabled = true;
+            const originalContent = btn.innerHTML;
             btn.innerHTML = `
                 <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
                 กำลังบันทึกข้อมูล...`;
-            btn.classList.replace('bg-indigo-600', 'bg-gray-400'); // เปลี่ยนสีปุ่มเป็นสีเทา
+            btn.classList.replace('bg-indigo-600', 'bg-gray-400');
 
             try {
-                // ดึง Profile จาก LINE
+                // ดึงข้อมูลโปรไฟล์จาก LINE
                 const profile = await liff.getProfile();
                 
-                // เตรียมข้อมูลส่งไปยัง Google Sheets
+                // เตรียมข้อมูลส่งไปที่ Google Sheets
                 const payload = {
                     userId: profile.userId,
                     name: name,
-                    phone: phone
+                    phone: phone,
+                    pictureUrl: profile.pictureUrl || "" // ส่งรูปภาพโปรไฟล์ไปด้วย
                 };
 
-                // ส่งข้อมูล (ใช้ fetch แบบ POST)
+                // ส่งข้อมูลไปยัง Google Apps Script
                 const response = await fetch(GasUrl, {
                     method: "POST",
-                    body: JSON.stringify(payload) // ส่งเป็น String JSON
+                    body: JSON.stringify(payload)
                 });
 
-                // --- ส่วนที่เพิ่มใหม่: ตรวจสอบการตอบกลับ (สำคัญสำหรับ CORS) ---
                 const result = await response.json();
 
                 if (result.status === 'success' || result.result === 'success') {
-                    alert("ส่งข้อมูลสำเร็จ! ระบบจะแจ้งผลการอนุมัติผ่าน LINE นะครับ");
-                    liff.closeWindow(); // ปิดหน้าต่าง LIFF ทันที
+                    alert("บันทึกข้อมูลเรียบร้อยแล้ว! ระบบจะแสดงข้อมูลสรุปในช่องแชทนะครับ");
+                    liff.closeWindow(); 
                 } else {
-                    throw new Error("Server returned error");
+                    throw new Error("Server error");
                 }
 
             } catch (err) {
-                console.error("Submit Error", err);
-                alert("เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง หรือติดต่อเจ้าหน้าที่");
+                console.error("Submit Error:", err);
+                alert("เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง");
                 
-                // คืนค่าปุ่มกลับมาให้กดใหม่ได้
+                // คืนค่าปุ่ม
                 btn.disabled = false;
-                btn.innerHTML = "ส่งข้อมูลลงทะเบียน";
+                btn.innerHTML = originalContent;
                 btn.classList.replace('bg-gray-400', 'bg-indigo-600');
             }
         }
