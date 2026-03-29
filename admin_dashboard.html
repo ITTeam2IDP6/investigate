@@ -4,63 +4,98 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - ระบบจัดการผู้ใช้งาน</title>
-    <!-- ใช้ Tailwind CSS เพื่อความสวยงาม -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Kanit', sans-serif; }
+        .modal { transition: opacity 0.25s ease; }
+        body.modal-active { overflow-x: hidden; overflow-y: visible !important; }
     </style>
 </head>
 <body class="bg-slate-50 p-4 md:p-8">
 
-    <div class="max-w-5xl mx-auto">
+    <div class="max-w-6xl mx-auto">
         <!-- Header -->
         <header class="flex justify-between items-center mb-8">
             <div>
                 <h1 class="text-2xl font-bold text-slate-800">จัดการผู้ใช้งาน (Admin)</h1>
-                <p class="text-slate-500 text-sm">ตรวจสอบและอนุมัติสมาชิกรายใหม่</p>
+                <p class="text-slate-500 text-sm">ตรวจสอบ อนุมัติ และแก้ไขข้อมูลสมาชิก</p>
             </div>
-            <button onclick="loadUsers()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg transition-all shadow-md active:scale-95">
-                🔄 รีเฟรชข้อมูล
+            <button onclick="loadUsers()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg transition-all shadow-md active:scale-95 flex items-center gap-2">
+                <span>🔄</span> รีเฟรชข้อมูล
             </button>
         </header>
 
-        <!-- Table Container -->
+        <!-- Table -->
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead class="bg-slate-100 border-b border-slate-200">
                         <tr>
-                            <th class="p-4 font-semibold text-slate-700">ชื่อ-นามสกุล</th>
-                            <th class="p-4 font-semibold text-slate-700">เบอร์โทรศัพท์</th>
+                            <th class="p-4 font-semibold text-slate-700">ชื่อ-นามสกุล / UID</th>
+                            <th class="p-4 font-semibold text-slate-700">เบอร์โทร / Email</th>
+                            <th class="p-4 font-semibold text-slate-700">สายงาน / สังกัด</th>
                             <th class="p-4 font-semibold text-slate-700 text-center">สถานะ</th>
                             <th class="p-4 font-semibold text-slate-700 text-center">จัดการ</th>
                         </tr>
                     </thead>
-                    
-                    <!-- *** จุดสำคัญที่ทำให้เกิด Error ก่อนหน้านี้ คือต้องมี id="tableBody" *** -->
                     <tbody id="tableBody" class="divide-y divide-slate-100">
-                        <tr>
-                            <td colspan="4" class="p-10 text-center text-slate-400">กำลังเตรียมการ...</td>
-                        </tr>
+                        <tr><td colspan="5" class="p-10 text-center text-slate-400">กำลังโหลด...</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <script>
-        // ใช้ URL เดิมของคุณ
-        const GasUrl = "https://script.google.com/macros/s/AKfycbwuQGtRMZG1LhpuM4jBKHdjDwzlENSKmqrAyWAtGKPOBrPfXeKX_AS5KIGBXgg_m3xunw/exec";
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center z-50">
+        <div class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"></div>
+        <div class="modal-container bg-white w-11/12 md:max-w-md mx-auto rounded-2xl shadow-lg z-50 overflow-y-auto">
+            <div class="modal-content py-6 text-left px-8">
+                <div class="flex justify-between items-center pb-3">
+                    <p class="text-2xl font-bold text-slate-800">แก้ไขข้อมูลสมาชิก</p>
+                    <div class="modal-close cursor-pointer z-50" onclick="toggleModal()">
+                        <span class="text-3xl text-gray-400">&times;</span>
+                    </div>
+                </div>
+                <form id="editForm" class="space-y-4">
+                    <input type="hidden" id="editUid">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">ชื่อ-นามสกุล</label>
+                        <input type="text" id="editName" class="w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">เบอร์โทรศัพท์</label>
+                        <input type="text" id="editPhone" class="w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">สภ.</label>
+                            <input type="text" id="editStation" class="w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">ภาค</label>
+                            <input type="text" id="editRegion" class="w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                    </div>
+                    <div class="flex justify-end pt-4 gap-2">
+                        <button type="button" onclick="toggleModal()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg">ยกเลิก</button>
+                        <button type="button" onclick="saveEdit()" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">บันทึกการแก้ไข</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
-        // เมื่อโหลดหน้าเว็บเสร็จให้ดึงข้อมูลทันที
+    <script>
+        const GasUrl = "https://script.google.com/macros/s/AKfycbwuQGtRMZG1LhpuM4jBKHdjDwzlENSKmqrAyWAtGKPOBrPfXeKX_AS5KIGBXgg_m3xunw/exec";
+        let allUsersData = [];
+
         window.onload = loadUsers;
 
         async function loadUsers() {
             const tbody = document.getElementById('tableBody');
-            if (!tbody) return; // ป้องกัน Error หากหา Element ไม่เจอ
-
-            tbody.innerHTML = '<tr><td colspan="4" class="p-10 text-center text-slate-400"><div class="flex justify-center items-center gap-2"><span>กำลังโหลดข้อมูล...</span></div></td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5" class="p-10 text-center text-slate-400">กำลังโหลดข้อมูล...</td></tr>';
 
             try {
                 const response = await fetch(GasUrl, {
@@ -68,91 +103,100 @@
                     body: JSON.stringify({ action: 'getAllUsers' })
                 });
                 const result = await response.json();
-                
                 if (result.status === 'success') {
+                    allUsersData = result.data;
                     renderTable(result.data);
-                } else {
-                    throw new Error(result.message);
                 }
             } catch (err) {
-                console.error("Error:", err);
-                tbody.innerHTML = `<tr><td colspan="4" class="p-10 text-center text-red-500">โหลดข้อมูลไม่สำเร็จ: ${err.message}</td></tr>`;
+                tbody.innerHTML = '<tr><td colspan="5" class="p-10 text-center text-red-500">เกิดข้อผิดพลาด</td></tr>';
             }
         }
 
-       // แก้ไขเฉพาะในส่วนฟังก์ชัน renderTable ภายใน index.html (หน้า Dashboard) ครับ
+        function renderTable(users) {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = users.map((user, index) => {
+                const statusColor = user[3] === 'Approved' ? 'bg-green-100 text-green-700' : 
+                                  user[3] === 'Rejected' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700';
+                
+                return `
+                <tr class="hover:bg-slate-50 border-b border-slate-100">
+                    <td class="p-4">
+                        <div class="flex items-center gap-3">
+                            <img src="${user[5] || 'https://via.placeholder.com/40'}" class="w-10 h-10 rounded-full object-cover shadow-sm">
+                            <div>
+                                <div class="font-semibold text-slate-800">${user[1]}</div>
+                                <div class="text-[10px] text-slate-400 font-mono">${user[0]}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="p-4">
+                        <div class="text-sm text-slate-600">${user[2]}</div>
+                        <div class="text-[11px] text-indigo-500">${user[6] || '-'}</div>
+                    </td>
+                    <td class="p-4">
+                        <div class="text-xs font-semibold text-slate-700">${user[7] || '-'}</div>
+                        <div class="text-[11px] text-slate-500">${user[8] || '-'} (${user[9] || '-'})</div>
+                    </td>
+                    <td class="p-4 text-center">
+                        <span class="px-3 py-1 rounded-full text-[11px] font-bold ${statusColor}">${user[3] || 'Pending'}</span>
+                    </td>
+                    <td class="p-4">
+                        <div class="flex justify-center gap-1">
+                            <button onclick="updateStatus('${user[0]}', 'Approved')" class="bg-green-500 text-white p-1.5 rounded-lg text-[10px]">อนุมัติ</button>
+                            <button onclick="openEditModal(${index})" class="bg-blue-500 text-white p-1.5 rounded-lg text-[10px]">แก้ไข</button>
+                            <button onclick="updateStatus('${user[0]}', 'Rejected')" class="bg-red-400 text-white p-1.5 rounded-lg text-[10px]">ปฏิเสธ</button>
+                        </div>
+                    </td>
+                </tr>
+                `;
+            }).join('');
+        }
 
-function renderTable(users) {
-    const tbody = document.getElementById('tableBody');
-    if (!users || users.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" class="p-10 text-center text-slate-400">ไม่พบข้อมูลรายชื่อในระบบ</td></tr>';
-        return;
-    }
+        function toggleModal() {
+            const modal = document.getElementById('editModal');
+            modal.classList.toggle('opacity-0');
+            modal.classList.toggle('pointer-events-none');
+        }
 
-    tbody.innerHTML = users.map(user => {
-        const statusColor = user[3] === 'Approved' ? 'bg-green-100 text-green-700' : 
-                          user[3] === 'Rejected' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700';
-        
-        // user[5] = รูป, user[6] = Gmail, user[7] = สายงาน, user[8] = สภ, user[9] = ภาค
-        return `
-        <tr class="hover:bg-slate-50 transition-colors border-b border-slate-100">
-            <td class="p-4">
-                <div class="flex items-center gap-3">
-                    <img src="${user[5] || 'https://via.placeholder.com/40'}" class="w-10 h-10 rounded-full object-cover border border-slate-200 shadow-sm">
-                    <div>
-                        <div class="font-semibold text-slate-800">${user[1]}</div>
-                        <div class="text-[10px] text-slate-400 font-mono">${user[0]}</div>
-                    </div>
-                </div>
-            </td>
-            <td class="p-4">
-                <div class="text-sm text-slate-600">${user[2]}</div>
-                <div class="text-[11px] text-indigo-500 font-medium">${user[6] || '-'}</div>
-            </td>
-            <td class="p-4">
-                <div class="text-xs font-semibold text-slate-700">${user[7] || '-'}</div>
-                <div class="text-[11px] text-slate-500">${user[8] || '-'} (${user[9] || '-'})</div>
-            </td>
-            <td class="p-4 text-center">
-                <span class="px-3 py-1 rounded-full text-[11px] font-bold ${statusColor}">
-                    ${user[3] || 'Pending'}
-                </span>
-            </td>
-            <td class="p-4">
-                <div class="flex justify-center gap-2">
-                    <button onclick="updateStatus('${user[0]}', 'Approved')" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs transition active:scale-90">อนุมัติ</button>
-                    <button onclick="updateStatus('${user[0]}', 'Rejected')" class="bg-red-400 hover:bg-red-500 text-white px-3 py-1.5 rounded-lg text-xs transition active:scale-90">ปฏิเสธ</button>
-                </div>
-            </td>
-        </tr>
-        `;
-    }).join('');
-}
+        function openEditModal(index) {
+            const user = allUsersData[index];
+            document.getElementById('editUid').value = user[0];
+            document.getElementById('editName').value = user[1];
+            document.getElementById('editPhone').value = user[2];
+            document.getElementById('editStation').value = user[8] || '';
+            document.getElementById('editRegion').value = user[9] || '';
+            toggleModal();
+        }
+
+        async function saveEdit() {
+            const payload = {
+                action: 'editUser',
+                userId: document.getElementById('editUid').value,
+                name: document.getElementById('editName').value,
+                phone: document.getElementById('editPhone').value,
+                station: document.getElementById('editStation').value,
+                region: document.getElementById('editRegion').value
+            };
+
+            toggleModal();
+            try {
+                const response = await fetch(GasUrl, { method: 'POST', body: JSON.stringify(payload) });
+                const result = await response.json();
+                alert(result.message);
+                loadUsers();
+            } catch (err) { alert("เกิดข้อผิดพลาด"); }
+        }
 
         async function updateStatus(uid, status) {
-            if (!confirm(`คุณต้องการเปลี่ยนสถานะผู้ใช้เป็น [${status}] ใช่หรือไม่?`)) return;
-
+            if (!confirm(`ยืนยันการเปลี่ยนสถานะเป็น ${status}?`)) return;
             try {
-                // แสดงสถานะ Loading ระหว่างอัปเดต
                 const response = await fetch(GasUrl, {
                     method: 'POST',
-                    body: JSON.stringify({ 
-                        action: 'updateStatus', 
-                        userId: uid, 
-                        status: status 
-                    })
+                    body: JSON.stringify({ action: 'updateStatus', userId: uid, status: status })
                 });
                 const result = await response.json();
-                
-                if (result.status === 'success') {
-                    alert("บันทึกข้อมูลสำเร็จ: " + result.message);
-                    loadUsers(); // รีโหลดตารางใหม่เพื่อแสดงสถานะล่าสุด
-                } else {
-                    alert("บันทึกไม่สำเร็จ: " + result.message);
-                }
-            } catch (err) {
-                alert("เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์");
-            }
+                loadUsers();
+            } catch (err) { alert("เกิดข้อผิดพลาด"); }
         }
     </script>
 </body>
