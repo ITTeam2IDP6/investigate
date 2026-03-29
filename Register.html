@@ -43,16 +43,28 @@
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">สายงาน</label>
-                    <input type="text" id="jobLine" placeholder="เช่น ปราบปราม" class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 outline-none transition text-sm">
+                    <input type="text" id="jobLine" placeholder="เช่น สืบสวน" class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 outline-none transition text-sm">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">สภ.</label>
-                    <input type="text" id="station" placeholder="ชื่อสถานี" class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 outline-none transition text-sm">
+                    <input type="text" id="station" placeholder="ชื่อสถานีที่ประจำอยู่" class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 outline-none transition text-sm">
                 </div>
             </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">ภาค</label>
-                <input type="text" id="region" placeholder="เช่น ภาค 1" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 outline-none transition">
+            
+           <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">ภาค (สังกัด)</label>
+                <select id="region" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 outline-none transition bg-white">
+                    <option value="" disabled selected>กรุณาเลือกภาค</option>
+                    <option value="1">ภาค 1</option>
+                    <option value="2">ภาค 2</option>
+                    <option value="3">ภาค 3</option>
+                    <option value="4">ภาค 4</option>
+                    <option value="5">ภาค 5</option>
+                    <option value="6">ภาค 6</option>
+                    <option value="7">ภาค 7</option>
+                    <option value="8">ภาค 8</option>
+                    <option value="9">ภาค 9</option>
+                </select>
             </div>
 
             <button onclick="submitData()" id="btnSubmit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-4 px-6 rounded-xl shadow-lg transition transform active:scale-95 flex justify-center items-center">
