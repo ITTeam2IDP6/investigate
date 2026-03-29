@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ลงทะเบียนเข้าใช้งานระบบ</title>
-    <!-- Tailwind CSS สำหรับดีไซน์ที่ทันสมัย -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- LINE SDK -->
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
@@ -21,7 +19,7 @@
 <body class="bg-slate-100 min-h-screen flex items-center justify-center p-4">
 
     <div class="glass-card w-full max-w-md rounded-3xl shadow-2xl overflow-hidden">
-        <!-- Header ส่วนหัว -->
+        
         <div class="bg-indigo-600 p-8 text-center text-white">
             <div class="inline-flex p-3 bg-white/20 rounded-full mb-4">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -32,7 +30,6 @@
             <p class="text-indigo-100 text-sm mt-1">กรุณากรอกข้อมูลเพื่อขออนุมัติเข้าใช้งาน</p>
         </div>
 
-        <!-- Form ส่วนกรอกข้อมูล -->
         <div class="p-8 space-y-6">
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">ชื่อ-นามสกุล</label>
@@ -56,61 +53,82 @@
     </div>
 
     <script>
-        // ใส่ LIFF ID ของคุณที่นี่
+        // --- ค่าคอนฟิก (ดึงมาจากโค้ดเดิมของคุณ) ---
         const LiffId = "2009632664-3vVVvlJR"; 
-        // ใส่ URL ของ Google Apps Script Web App ที่นี่
         const GasUrl = "https://script.google.com/macros/s/AKfycbwuQGtRMZG1LhpuM4jBKHdjDwzlENSKmqrAyWAtGKPOBrPfXeKX_AS5KIGBXgg_m3xunw/exec"; 
 
+        // ฟังก์ชันเริ่มทำงานเมื่อโหลดหน้าเว็บ
         async function main() {
             try {
                 await liff.init({ liffId: LiffId });
                 if (!liff.isLoggedIn()) {
-                    liff.login();
+                    liff.login(); // ถ้ายังไม่ Login ให้พาไป Login ของ LINE
                 }
             } catch (err) {
                 console.error("LIFF Init Error", err);
+                // alert("เกิดข้อผิดพลาดในการเชื่อมต่อ LINE");
             }
         }
-        main();
+        main(); // สั่งให้ทำงานทันที
 
+        // ฟังก์ชันส่งข้อมูล (ปรับปรุงจากเดิมให้สวยงามและรองรับข้าม Domain)
         async function submitData() {
             const name = document.getElementById('name').value;
             const phone = document.getElementById('phone').value;
             const btn = document.getElementById('btnSubmit');
 
+            // ตรวจสอบข้อมูลเบื้องต้น
             if (!name || !phone) {
-                alert("กรุณากรอกข้อมูลให้ครบถ้วน");
+                alert("กรุณากรอกข้อมูลให้ครบถ้วนครับ");
                 return;
             }
 
-            // แสดงสถานะกำลังโหลด
-            btn.disabled = true;
-            btn.innerHTML = "กำลังบันทึกข้อมูล...";
-            btn.classList.replace('bg-indigo-600', 'bg-gray-400');
+            // --- ส่วนที่เพิ่มใหม่: แสดงสถานะกำลังโหลด ---
+            btn.disabled = true; // ห้ามกดซ้ำ
+            btn.innerHTML = `
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                กำลังบันทึกข้อมูล...`;
+            btn.classList.replace('bg-indigo-600', 'bg-gray-400'); // เปลี่ยนสีปุ่มเป็นสีเทา
 
-            const profile = await liff.getProfile();
-            const payload = {
-                userId: profile.userId,
-                name: name,
-                phone: phone
-            };
+            try {
+                // ดึง Profile จาก LINE
+                const profile = await liff.getProfile();
+                
+                // เตรียมข้อมูลส่งไปยัง Google Sheets
+                const payload = {
+                    userId: profile.userId,
+                    name: name,
+                    phone: phone
+                };
 
-            // ส่งข้อมูลไปยัง Google Apps Script
-            fetch(GasUrl, {
-                method: "POST",
-                body: JSON.stringify(payload)
-            })
-            .then(res => res.json())
-            .then(data => {
-                alert("ส่งข้อมูลสำเร็จ! ระบบจะแจ้งผลการอนุมัติผ่าน LINE ครับ");
-                liff.closeWindow();
-            })
-            .catch(err => {
-                alert("เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง");
+                // ส่งข้อมูล (ใช้ fetch แบบ POST)
+                const response = await fetch(GasUrl, {
+                    method: "POST",
+                    body: JSON.stringify(payload) // ส่งเป็น String JSON
+                });
+
+                // --- ส่วนที่เพิ่มใหม่: ตรวจสอบการตอบกลับ (สำคัญสำหรับ CORS) ---
+                const result = await response.json();
+
+                if (result.status === 'success' || result.result === 'success') {
+                    alert("ส่งข้อมูลสำเร็จ! ระบบจะแจ้งผลการอนุมัติผ่าน LINE นะครับ");
+                    liff.closeWindow(); // ปิดหน้าต่าง LIFF ทันที
+                } else {
+                    throw new Error("Server returned error");
+                }
+
+            } catch (err) {
+                console.error("Submit Error", err);
+                alert("เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง หรือติดต่อเจ้าหน้าที่");
+                
+                // คืนค่าปุ่มกลับมาให้กดใหม่ได้
                 btn.disabled = false;
                 btn.innerHTML = "ส่งข้อมูลลงทะเบียน";
                 btn.classList.replace('bg-gray-400', 'bg-indigo-600');
-            });
+            }
         }
     </script>
 </body>
