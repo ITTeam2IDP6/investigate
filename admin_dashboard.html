@@ -1,74 +1,60 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
-    <style>body { font-family: 'Sarabun', sans-serif; }</style>
-</head>
-<body class="bg-gray-50 p-6">
-    <div class="max-w-6xl mx-auto">
-        <header class="mb-8 flex justify-between items-center">
-            <h1 class="text-3xl font-bold text-gray-800">จัดการผู้ใช้งาน (Admin)</h1>
-            <button onclick="loadUsers()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">รีเฟรชข้อมูล</button>
-        </header>
+<script>
+    const GasUrl = "https://script.google.com/macros/s/AKfycbwuQGtRMZG1LhpuM4jBKHdjDwzlENSKmqrAyWAtGKPOBrPfXeKX_AS5KIGBXgg_m3xunw/exec"; // ใส่ URL ที่ได้จากตอน Deploy Web App
 
-        <div class="bg-white shadow-xl rounded-2xl overflow-hidden">
-            <table class="w-full text-left">
-                <thead class="bg-gray-100 border-b">
-                    <tr>
-                        <th class="p-4">ชื่อ-นามสกุล</th>
-                        <th class="p-4">เบอร์โทรศัพท์</th>
-                        <th class="p-4">สถานะ</th>
-                        <th class="p-4 text-center">จัดการ</th>
-                    </tr>
-                </thead>
-                <tbody id="userTableBody">
-                    <!-- ข้อมูลจะโหลดมาใส่ที่นี่ -->
-                </tbody>
-            </table>
-        </div>
-    </div>
+    window.onload = loadUsers;
 
-    <script>
-        function loadUsers() {
-            google.script.run.withSuccessHandler(displayUsers).getAllUsers();
-        }
+    async function loadUsers() {
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = '<tr><td colspan="4" class="p-10 text-center text-slate-400">กำลังโหลด...</td></tr>';
 
-        function displayUsers(users) {
-            const body = document.getElementById('userTableBody');
-            body.innerHTML = '';
-            users.forEach(user => {
-                const row = `
-                <tr class="border-b hover:bg-gray-50 transition">
-                    <td class="p-4 font-medium">${user[1]}</td>
-                    <td class="p-4 text-gray-600">${user[2]}</td>
-                    <td class="p-4">
-                        <span class="px-3 py-1 rounded-full text-xs ${user[3] === 'Approved' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}">
-                            ${user[3]}
-                        </span>
-                    </td>
-                    <td class="p-4 text-center">
-                        <button onclick="approveUser('${user[0]}')" class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 mr-2">อนุมัติ</button>
-                        <button onclick="rejectUser('${user[0]}')" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">ปฏิเสธ</button>
-                    </td>
-                </tr>`;
-                body.insertAdjacentHTML('beforeend', row);
+        try {
+            const response = await fetch(GasUrl, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'getAllUsers' })
             });
+            const result = await response.json();
+            renderTable(result.data);
+        } catch (err) {
+            alert("โหลดข้อมูลไม่สำเร็จ: " + err);
         }
+    }
 
-        function approveUser(id) {
-            if(confirm('ยืนยันการอนุมัติ?')) {
-                google.script.run.withSuccessHandler(loadUsers).updateStatus(id, 'Approved');
-            }
+    function renderTable(users) {
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = users.map(user => `
+            <tr class="hover:bg-slate-50 border-b">
+                <td class="p-4 font-semibold">${user[1]}</td>
+                <td class="p-4">${user[2]}</td>
+                <td class="p-4 text-center">
+                    <span class="px-3 py-1 rounded-full text-xs ${user[3] === 'Approved' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}">
+                        ${user[3]}
+                    </span>
+                </td>
+                <td class="p-4 flex justify-center gap-2">
+                    <button onclick="updateStatus('${user[0]}', 'Approved')" class="bg-green-500 text-white px-3 py-1 rounded-lg text-sm">อนุมัติ</button>
+                    <button onclick="updateStatus('${user[0]}', 'Rejected')" class="bg-red-400 text-white px-3 py-1 rounded-lg text-sm">ปฏิเสธ</button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    async function updateStatus(uid, status) {
+        if (!confirm(`ยืนยันการเปลี่ยนสถานะเป็น ${status}?`)) return;
+
+        try {
+            const response = await fetch(GasUrl, {
+                method: 'POST',
+                body: JSON.stringify({ 
+                    action: 'updateStatus', 
+                    userId: uid, 
+                    status: status 
+                })
+            });
+            const result = await response.json();
+            alert(result.message);
+            loadUsers(); // โหลดตารางใหม่
+        } catch (err) {
+            alert("เกิดข้อผิดพลาดในการอัปเดต");
         }
-
-        function rejectUser(id) {
-            if(confirm('ยืนยันการปฏิเสธ?')) {
-                google.script.run.withSuccessHandler(loadUsers).updateStatus(id, 'Rejected');
-            }
-        }
-
-        window.onload = loadUsers;
-    </script>
-</body>
-</html>
+    }
+</script>
