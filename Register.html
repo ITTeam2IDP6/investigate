@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ลงทะเบียนเข้าใช้งานระบบ</title>
+    <!-- Tailwind CSS สำหรับดีไซน์ที่ทันสมัย -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- LINE SDK -->
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Sarabun', sans-serif; }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen flex items-center justify-center p-4">
+
+    <div class="glass-card w-full max-w-md rounded-3xl shadow-2xl overflow-hidden">
+        <!-- Header ส่วนหัว -->
+        <div class="bg-indigo-600 p-8 text-center text-white">
+            <div class="inline-flex p-3 bg-white/20 rounded-full mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+            </div>
+            <h1 class="text-2xl font-semibold">ลงทะเบียนสมาชิก</h1>
+            <p class="text-indigo-100 text-sm mt-1">กรุณากรอกข้อมูลเพื่อขออนุมัติเข้าใช้งาน</p>
+        </div>
+
+        <!-- Form ส่วนกรอกข้อมูล -->
+        <div class="p-8 space-y-6">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">ชื่อ-นามสกุล</label>
+                <input type="text" id="name" placeholder="ระบุชื่อจริงของคุณ" 
+                    class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">เบอร์โทรศัพท์</label>
+                <input type="tel" id="phone" placeholder="08x-xxxxxxx" 
+                    class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition">
+            </div>
+
+            <button onclick="submitData()" id="btnSubmit"
+                class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg shadow-indigo-200 transition transform active:scale-95 flex justify-center items-center">
+                <span>ส่งข้อมูลลงทะเบียน</span>
+            </button>
+            
+            <p class="text-center text-xs text-gray-400">ระบบจะส่งข้อมูลไปยังเจ้าหน้าที่เพื่อพิจารณาอนุมัติ</p>
+        </div>
+    </div>
+
+    <script>
+        // ใส่ LIFF ID ของคุณที่นี่
+        const LiffId = "YOUR_LIFF_ID"; 
+        // ใส่ URL ของ Google Apps Script Web App ที่นี่
+        const GasUrl = "YOUR_GAS_WEB_APP_URL"; 
+
+        async function main() {
+            try {
+                await liff.init({ liffId: LiffId });
+                if (!liff.isLoggedIn()) {
+                    liff.login();
+                }
+            } catch (err) {
+                console.error("LIFF Init Error", err);
+            }
+        }
+        main();
+
+        async function submitData() {
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
+            const btn = document.getElementById('btnSubmit');
+
+            if (!name || !phone) {
+                alert("กรุณากรอกข้อมูลให้ครบถ้วน");
+                return;
+            }
+
+            // แสดงสถานะกำลังโหลด
+            btn.disabled = true;
+            btn.innerHTML = "กำลังบันทึกข้อมูล...";
+            btn.classList.replace('bg-indigo-600', 'bg-gray-400');
+
+            const profile = await liff.getProfile();
+            const payload = {
+                userId: profile.userId,
+                name: name,
+                phone: phone
+            };
+
+            // ส่งข้อมูลไปยัง Google Apps Script
+            fetch(GasUrl, {
+                method: "POST",
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                alert("ส่งข้อมูลสำเร็จ! ระบบจะแจ้งผลการอนุมัติผ่าน LINE ครับ");
+                liff.closeWindow();
+            })
+            .catch(err => {
+                alert("เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง");
+                btn.disabled = false;
+                btn.innerHTML = "ส่งข้อมูลลงทะเบียน";
+                btn.classList.replace('bg-gray-400', 'bg-indigo-600');
+            });
+        }
+    </script>
+</body>
+</html>
