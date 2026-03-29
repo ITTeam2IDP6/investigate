@@ -80,38 +80,54 @@
             }
         }
 
-        function renderTable(users) {
-            const tbody = document.getElementById('tableBody');
-            if (!users || users.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" class="p-10 text-center text-slate-400">ไม่พบข้อมูลรายชื่อในระบบ</td></tr>';
-                return;
-            }
+       // แก้ไขเฉพาะในส่วนฟังก์ชัน renderTable ภายใน index.html (หน้า Dashboard) ครับ
 
-            tbody.innerHTML = users.map(user => {
-                // เช็คสถานะเพื่อเปลี่ยนสี Badge
-                const statusColor = user[3] === 'Approved' ? 'bg-green-100 text-green-700' : 
-                                  user[3] === 'Rejected' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700';
-                
-                return `
-                <tr class="hover:bg-slate-50 transition-colors">
-                    <td class="p-4">
+function renderTable(users) {
+    const tbody = document.getElementById('tableBody');
+    if (!users || users.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="p-10 text-center text-slate-400">ไม่พบข้อมูลรายชื่อในระบบ</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = users.map(user => {
+        const statusColor = user[3] === 'Approved' ? 'bg-green-100 text-green-700' : 
+                          user[3] === 'Rejected' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700';
+        
+        // user[5] = รูป, user[6] = Gmail, user[7] = สายงาน, user[8] = สภ, user[9] = ภาค
+        return `
+        <tr class="hover:bg-slate-50 transition-colors border-b border-slate-100">
+            <td class="p-4">
+                <div class="flex items-center gap-3">
+                    <img src="${user[5] || 'https://via.placeholder.com/40'}" class="w-10 h-10 rounded-full object-cover border border-slate-200 shadow-sm">
+                    <div>
                         <div class="font-semibold text-slate-800">${user[1]}</div>
-                        <div class="text-xs text-slate-400 font-mono">${user[0]}</div>
-                    </td>
-                    <td class="p-4 text-slate-600">${user[2]}</td>
-                    <td class="p-4 text-center">
-                        <span class="px-3 py-1 rounded-full text-xs font-medium ${statusColor}">
-                            ${user[3] || 'Pending'}
-                        </span>
-                    </td>
-                    <td class="p-4 flex justify-center gap-2">
-                        <button onclick="updateStatus('${user[0]}', 'Approved')" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-lg text-sm shadow-sm transition active:scale-90">อนุมัติ</button>
-                        <button onclick="updateStatus('${user[0]}', 'Rejected')" class="bg-red-400 hover:bg-red-500 text-white px-3 py-1 rounded-lg text-sm shadow-sm transition active:scale-90">ปฏิเสธ</button>
-                    </td>
-                </tr>
-                `;
-            }).join('');
-        }
+                        <div class="text-[10px] text-slate-400 font-mono">${user[0]}</div>
+                    </div>
+                </div>
+            </td>
+            <td class="p-4">
+                <div class="text-sm text-slate-600">${user[2]}</div>
+                <div class="text-[11px] text-indigo-500 font-medium">${user[6] || '-'}</div>
+            </td>
+            <td class="p-4">
+                <div class="text-xs font-semibold text-slate-700">${user[7] || '-'}</div>
+                <div class="text-[11px] text-slate-500">${user[8] || '-'} (${user[9] || '-'})</div>
+            </td>
+            <td class="p-4 text-center">
+                <span class="px-3 py-1 rounded-full text-[11px] font-bold ${statusColor}">
+                    ${user[3] || 'Pending'}
+                </span>
+            </td>
+            <td class="p-4">
+                <div class="flex justify-center gap-2">
+                    <button onclick="updateStatus('${user[0]}', 'Approved')" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs transition active:scale-90">อนุมัติ</button>
+                    <button onclick="updateStatus('${user[0]}', 'Rejected')" class="bg-red-400 hover:bg-red-500 text-white px-3 py-1.5 rounded-lg text-xs transition active:scale-90">ปฏิเสธ</button>
+                </div>
+            </td>
+        </tr>
+        `;
+    }).join('');
+}
 
         async function updateStatus(uid, status) {
             if (!confirm(`คุณต้องการเปลี่ยนสถานะผู้ใช้เป็น [${status}] ใช่หรือไม่?`)) return;
