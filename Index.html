@@ -3,7 +3,8 @@
 <head>
   <base target="_top">
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>
@@ -13,21 +14,23 @@
       color: #f8fafc; 
       margin: 0;
       padding: 0;
+      /* ป้องกันการเลื่อนหน้าจอเกินขอบ */
+      overflow: hidden; 
+      position: fixed;
+      width: 100%;
+      height: 100%;
     }
     .glass-card {
       background: rgba(30, 41, 59, 0.8);
       backdrop-filter: blur(12px);
       border: 1px solid rgba(255, 255, 255, 0.1);
     }
-    /* ปรับให้เต็มจอในมือถือ */
+    /* สไตล์เต็มจอสำหรับมือถือ */
     @media (max-width: 640px) {
       .glass-card {
-        border-radius: 0; /* เอาขอบมนออกเพื่อให้แนบขอบจอ */
+        border-radius: 0;
         min-height: 100vh;
         border: none;
-      }
-      body {
-        padding: 0;
       }
     }
     .input-field {
@@ -35,6 +38,13 @@
       border: 2px solid #334155;
       color: #38bdf8;
       transition: all 0.3s;
+      /* ปรับ Font-size เพื่อป้องกัน iOS auto-zoom */
+      font-size: 1.5rem !important; 
+    }
+    /* ปรับขนาด placeholder ให้ใหญ่ขึ้นเล็กน้อย */
+    .input-field::placeholder {
+      font-size: 1.1rem;
+      opacity: 0.6;
     }
     .input-field:focus {
       border-color: #38bdf8;
@@ -48,8 +58,9 @@
     
     .developer-footer {
       border-top: 1px solid rgba(255, 255, 255, 0.05);
-      margin-top: 2rem;
+      margin-top: auto; /* ดันลงล่างสุด */
       padding-top: 1.5rem;
+      padding-bottom: env(safe-area-inset-bottom); /* รองรับขีดล่างไอโฟน */
       text-align: center;
     }
     .dev-team {
@@ -62,49 +73,49 @@
     .dev-team::after { content: " ‹"; color: #f59e0b; }
   </style>
 </head>
-<body class="sm:flex sm:items-center sm:justify-center sm:min-h-screen sm:p-4">
+<body class="sm:flex sm:items-center sm:justify-center sm:min-h-screen">
 
-  <!-- Container: เต็มหน้าจอในมือถือ, กว้าง 450px ใน Desktop -->
-  <div class="w-full sm:max-w-md glass-card shadow-2xl p-6 space-y-6 flex flex-col min-h-screen sm:min-h-fit sm:rounded-[2rem]">
+  
+<div class="w-full sm:max-w-md glass-card shadow-2xl p-6 flex flex-col h-full sm:h-auto sm:min-h-fit sm:rounded-[2rem] overflow-y-auto">
     
-    <!-- Tab Navigation -->
-    <div class="flex border-b border-slate-700">
+    
+<div class="flex border-b border-slate-700 mb-6">
       <button onclick="switchTab('tab1')" id="btn-tab1" class="tab-btn active flex-1 py-3 text-sm font-bold uppercase">LAC + CI</button>
       <button onclick="switchTab('tab2')" id="btn-tab2" class="tab-btn flex-1 py-3 text-sm font-bold uppercase">Hex to ECI</button>
     </div>
 
-    <!-- Header -->
-    <div class="text-center pt-2">
+    
+<div class="text-center mb-6">
       <h1 class="text-3xl font-bold text-sky-400 tracking-tight">DTAC 4G CONVERTER</h1>
       <p id="sub-title" class="text-slate-400 text-sm mt-1">แปลงค่าจาก CDR ไปเดินเบส</p>
     </div>
 
-    <!-- Content Sections -->
-    <div class="flex-grow space-y-6">
-      <!-- Section 1: LAC + CI -->
-      <div id="section-tab1" class="space-y-6">
+    
+<div class="space-y-6">
+      
+<div id="section-tab1" class="space-y-6">
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="block text-[10px] font-bold text-slate-500 mb-1 uppercase">กรอก LAC</label>
-            <input type="number" id="lacInput" placeholder="1174" class="input-field w-full py-4 px-4 rounded-2xl text-center text-2xl font-bold" oninput="calculateLAC()">
+            <input type="number" id="lacInput" placeholder="เช่น 1174" class="input-field w-full py-4 px-4 rounded-2xl text-center font-bold" oninput="calculateLAC()">
           </div>
           <div>
             <label class="block text-[10px] font-bold text-slate-500 mb-1 uppercase">กรอก CI</label>
-            <input type="number" id="ciInput" placeholder="10529" class="input-field w-full py-4 px-4 rounded-2xl text-center text-2xl font-bold" oninput="calculateLAC()">
+            <input type="number" id="ciInput" placeholder="เช่น 10529" class="input-field w-full py-4 px-4 rounded-2xl text-center font-bold" oninput="calculateLAC()">
           </div>
         </div>
       </div>
 
-      <!-- Section 2: Hex Direct -->
-      <div id="section-tab2" class="space-y-6 hidden">
+      
+<div id="section-tab2" class="space-y-6 hidden">
         <div>
           <label class="block text-xs font-semibold text-slate-400 mb-2 uppercase text-center">กรอกชุดเลข Hex (เช่น 059EE13)</label>
-          <input type="text" id="hexInput" placeholder="059EE13" class="input-field w-full py-4 px-4 rounded-2xl text-center text-3xl font-bold uppercase" oninput="calculateHex()">
+          <input type="text" id="hexInput" placeholder="เช่น 059EE13" class="input-field w-full py-4 px-4 rounded-2xl text-center font-bold uppercase" oninput="calculateHex()">
         </div>
       </div>
 
-      <!-- Process Display -->
-      <div class="space-y-3 py-4 border-y border-slate-800">
+      
+<div class="space-y-3 py-4 border-y border-slate-800">
         <div class="flex justify-between items-center text-xs">
           <span class="text-slate-500 font-semibold">Hex Combined:</span>
           <span id="hexProcess" class="font-mono text-amber-400 text-sm">-</span>
@@ -115,8 +126,8 @@
         </div>
       </div>
 
-      <!-- eNB & CID Result -->
-      <div class="grid grid-cols-2 gap-4">
+      
+<div class="grid grid-cols-2 gap-4">
         <div class="result-box rounded-2xl p-4 text-center">
           <p class="text-[10px] text-sky-400 font-bold uppercase mb-1">eNB</p>
           <div id="enbRes" class="text-3xl font-bold text-white">-</div>
@@ -127,16 +138,16 @@
         </div>
       </div>
 
-      <!-- ECI Main Result -->
-      <div class="bg-gradient-to-br from-sky-500 to-blue-700 rounded-2xl p-6 shadow-lg border border-sky-400/20">
+      
+<div class="bg-gradient-to-br from-sky-500 to-blue-700 rounded-2xl p-6 shadow-lg border border-sky-400/20">
         <p class="text-center text-sky-100 text-[10px] font-bold uppercase mb-2">ECI RESULT</p>
         <div id="eciRes" class="text-center text-5xl font-bold text-white tracking-widest">-</div>
       </div>
     </div>
 
-    <!-- Footer -->
-    <div>
-      <div class="text-[10px] text-slate-500 text-center leading-relaxed italic">
+    
+<div class="flex flex-col flex-grow pt-6">
+      <div class="text-[10px] text-slate-500 text-center leading-relaxed italic mb-auto">
         Logic: <span id="logicText">DEC2HEX(LAC+CI) → Split 5 → eNB*256+CID</span>
       </div>
 
