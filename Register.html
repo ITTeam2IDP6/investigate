@@ -71,10 +71,13 @@
         }
         main(); // สั่งให้ทำงานทันที
 
-      async function submitData() {
-    const name = document.getElementById('name').value;
-    const phone = document.getElementById('phone').value;
-    const btn = document.getElementById('btnSubmit');
+     const profile = await liff.getProfile();
+const data = {
+    userId: profile.userId,
+    name: document.getElementById('name').value,
+    phone: document.getElementById('phone').value,
+    pictureUrl: profile.pictureUrl // เพิ่มบรรทัดนี้เพื่อส่งรูปภาพ
+};
 
     if (!name || !phone) {
         alert("กรุณากรอกข้อมูลให้ครบถ้วนครับ");
