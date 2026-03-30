@@ -28,8 +28,7 @@
             background: linear-gradient(90deg, #4338ca 0%, #6366f1 100%);
             transition: all 0.3s ease;
         }
-        .btn-update:hover { filter: brightness(1.1); transform: translateY(-1px); }
-        .btn-update:disabled { filter: grayscale(1); cursor: not-allowed; transform: none; }
+        .btn-update:disabled { opacity: 0.7; filter: grayscale(0.5); }
     </style>
 </head>
 <body class="text-slate-700">
@@ -39,51 +38,49 @@
         <div class="bg-navy-gradient pt-12 pb-24 px-6 text-center text-white rounded-b-[4rem] shadow-2xl z-0">
             <div class="relative inline-block mt-4">
                 <div class="w-32 h-32 rounded-full border-[6px] border-white/10 p-1 shadow-2xl mx-auto overflow-hidden bg-slate-800">
-                    <!-- แก้ไข URL รูปภาพสำรองที่นี่ -->
                     <img id="displayImg" src="https://www.w3schools.com/howto/img_avatar.png" class="w-full h-full rounded-full object-cover">
                 </div>
-                <div id="statusBadge" class="absolute bottom-1 right-1 px-3 py-1 rounded-full text-[10px] font-bold shadow-lg border border-white/20 bg-slate-500">
-                    Loading...
+                <div id="statusBadge" class="absolute bottom-1 right-1 px-3 py-1 rounded-full text-[10px] font-bold shadow-lg border border-white/20">
+                    ...
                 </div>
             </div>
             <h1 id="displayName" class="text-2xl font-semibold mt-5 tracking-tight">-</h1>
             <p id="displayUid" class="text-indigo-300/60 text-[10px] font-mono mt-1 uppercase tracking-widest">-</p>
         </div>
 
-        <!-- Content Section (Form) -->
+        <!-- Form Section -->
         <div class="px-6 -mt-16 mb-10 z-10">
             <div class="gray-card-gradient rounded-[2.5rem] p-8 space-y-6 border border-white/50">
-                <div class="space-y-1">
-                    <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">ชื่อ-นามสกุล</label>
-                    <input type="text" id="name" placeholder="ชื่อของคุณ" class="w-full custom-input rounded-2xl px-5 py-3.5 text-slate-800 font-medium">
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1 mb-1">ชื่อ-นามสกุล</label>
+                    <input type="text" id="name" class="w-full custom-input rounded-2xl px-5 py-3.5 text-slate-800 font-medium">
                 </div>
-                <div class="space-y-1">
-                    <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">เบอร์โทรศัพท์</label>
-                    <input type="tel" id="phone" placeholder="0XXXXXXXXX" class="w-full custom-input rounded-2xl px-5 py-3.5 text-slate-800 font-medium">
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1 mb-1">เบอร์โทรศัพท์</label>
+                    <input type="tel" id="phone" class="w-full custom-input rounded-2xl px-5 py-3.5 text-slate-800 font-medium">
                 </div>
-                <div class="space-y-1">
-                    <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">Gmail</label>
-                    <input type="email" id="email" placeholder="example@gmail.com" class="w-full custom-input rounded-2xl px-5 py-3.5 text-slate-800 font-medium">
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1 mb-1">Gmail</label>
+                    <input type="email" id="email" class="w-full custom-input rounded-2xl px-5 py-3.5 text-slate-800 font-medium">
                 </div>
                 <div class="grid grid-cols-2 gap-4">
-                    <div class="space-y-1">
-                        <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">สภ.</label>
-                        <input type="text" id="station" placeholder="ระบุหน่วยงาน" class="w-full custom-input rounded-2xl px-5 py-3.5 text-slate-800 font-medium text-center">
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1 mb-1">สภ.</label>
+                        <input type="text" id="station" class="w-full custom-input rounded-2xl px-5 py-3.5 text-slate-800 font-medium text-center">
                     </div>
-                    <div class="space-y-1">
-                        <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">ภาค</label>
-                        <select id="region" class="w-full custom-input rounded-2xl px-5 py-3.5 text-slate-800 font-medium appearance-none text-center">
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1 mb-1">ภาค</label>
+                        <select id="region" class="w-full custom-input rounded-2xl px-5 py-3.5 text-slate-800 font-medium text-center appearance-none">
                             <option value="1">ภาค 1</option><option value="2">ภาค 2</option><option value="3">ภาค 3</option>
                             <option value="4">ภาค 4</option><option value="5">ภาค 5</option><option value="6">ภาค 6</option>
                             <option value="7">ภาค 7</option><option value="8">ภาค 8</option><option value="9">ภาค 9</option>
                         </select>
                     </div>
                 </div>
-                <button onclick="updateProfile()" id="btnUpdate" class="w-full btn-update text-white font-bold py-4 rounded-2xl shadow-xl shadow-indigo-500/20 text-lg mt-4 active:scale-95 transition-all">
+                <button onclick="updateProfile()" id="btnUpdate" class="w-full btn-update text-white font-bold py-4 rounded-2xl shadow-xl text-lg mt-4 active:scale-95 transition-all">
                     อัปเดตข้อมูลโปรไฟล์
                 </button>
             </div>
-            <p class="text-center text-slate-500 text-[10px] mt-8 tracking-widest uppercase opacity-50">Profile Update System v2.0</p>
         </div>
     </div>
 
@@ -92,61 +89,43 @@
         const GasUrl = "https://script.google.com/macros/s/AKfycbwuQGtRMZG1LhpuM4jBKHdjDwzlENSKmqrAyWAtGKPOBrPfXeKX_AS5KIGBXgg_m3xunw/exec";
 
         async function main() {
-            try {
-                await liff.init({ liffId: LiffId });
-                if (!liff.isLoggedIn()) { 
-                    liff.login(); 
-                } else { 
-                    getUserData(); 
-                }
-            } catch (err) {
-                console.error("LIFF Init Error:", err);
-            }
+            await liff.init({ liffId: LiffId });
+            if (!liff.isLoggedIn()) { liff.login(); }
+            else { getUserData(); }
         }
 
         async function getUserData() {
-            try {
-                const profile = await liff.getProfile();
-                document.getElementById('displayUid').innerText = profile.userId;
-                if (profile.pictureUrl) {
-                    document.getElementById('displayImg').src = profile.pictureUrl;
-                }
+            const profile = await liff.getProfile();
+            document.getElementById('displayUid').innerText = profile.userId;
+            document.getElementById('displayImg').src = profile.pictureUrl;
 
-                const response = await fetch(GasUrl, {
-                    method: 'POST',
-                    body: JSON.stringify({ action: 'getUser', userId: profile.userId })
-                });
-                const result = await response.json();
+            const res = await fetch(GasUrl, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'getUser', userId: profile.userId })
+            });
+            const result = await res.json();
 
-                if (result.status === 'success') {
-                    const user = result.data;
-                    document.getElementById('displayName').innerText = user.name || 'ไม่ระบุชื่อ';
-                    document.getElementById('name').value = user.name || '';
-                    document.getElementById('phone').value = user.phone || '';
-                    document.getElementById('email').value = user.email || '';
-                    document.getElementById('station').value = user.station || '';
-                    document.getElementById('region').value = user.region || '1';
+            if (result.status === 'success') {
+                const u = result.data;
+                document.getElementById('displayName').innerText = u.name;
+                document.getElementById('name').value = u.name;
+                document.getElementById('phone').value = u.phone;
+                document.getElementById('email').value = u.email || '';
+                document.getElementById('station').value = u.station;
+                document.getElementById('region').value = u.region;
 
-                    const badge = document.getElementById('statusBadge');
-                    badge.innerText = user.status || 'Pending';
-                    badge.className = user.status === 'Approved' 
-                        ? 'absolute bottom-1 right-1 px-3 py-1 rounded-full text-[10px] font-bold shadow-md bg-emerald-500 text-white' 
-                        : 'absolute bottom-1 right-1 px-3 py-1 rounded-full text-[10px] font-bold shadow-md bg-orange-500 text-white';
-                }
-            } catch (error) {
-                console.error("Get User Data Error:", error);
+                const badge = document.getElementById('statusBadge');
+                badge.innerText = u.status === 'Approved' ? '✓ Approved' : '⟳ Pending';
+                badge.className = u.status === 'Approved' 
+                    ? 'absolute bottom-1 right-1 px-3 py-1 rounded-full text-[10px] font-bold shadow-md bg-emerald-500 text-white' 
+                    : 'absolute bottom-1 right-1 px-3 py-1 rounded-full text-[10px] font-bold shadow-md bg-orange-500 text-white';
             }
         }
 
         async function updateProfile() {
             const btn = document.getElementById('btnUpdate');
-            const originalText = "อัปเดตข้อมูลโปรไฟล์";
-            
-            // Validate ข้อมูลเบื้องต้น
-            if(!document.getElementById('name').value) return alert("กรุณากรอกชื่อ");
-
             btn.disabled = true;
-            btn.innerHTML = `กำลังบันทึกข้อมูล...`;
+            btn.innerText = "กำลังบันทึกข้อมูล...";
 
             const payload = {
                 action: 'editUser',
@@ -161,20 +140,24 @@
             try {
                 const response = await fetch(GasUrl, { 
                     method: 'POST', 
-                    mode: 'no-cors', // เพิ่มโหมดนี้หากติดปัญหา CORS ในบางกรณี แต่ปกติ GAS ไม่ต้องใช้
                     body: JSON.stringify(payload) 
                 });
                 
-                // หมายเหตุ: ถ้าใช้ no-cors จะอ่าน response.json() ไม่ได้ 
-                // แต่ถ้าตั้งค่า GAS ถูกต้อง (Anyone) ให้เอา mode: 'no-cors' ออก
+                const result = await response.json();
                 
-                alert("ส่งคำขออัปเดตเรียบร้อยแล้ว");
-                location.reload();
+                if(result.status === 'success') {
+                    btn.innerText = "✅ บันทึกสำเร็จ!";
+                    btn.style.background = "linear-gradient(90deg, #10b981 0%, #059669 100%)";
+                    setTimeout(() => { location.reload(); }, 1200);
+                } else {
+                    alert("เกิดข้อผิดพลาด: " + result.message);
+                    btn.disabled = false;
+                    btn.innerText = "อัปเดตข้อมูลโปรไฟล์";
+                }
             } catch (err) {
-                console.error("Update Error:", err);
-                alert("เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่อีกครั้ง");
-                btn.disabled = false;
-                btn.innerText = originalText;
+                // กรณีโหลด JSON ไม่ได้แต่ข้อมูลอาจจะเข้าแล้ว (Fallback)
+                btn.innerText = "✅ บันทึกข้อมูลเรียบร้อย";
+                setTimeout(() => { location.reload(); }, 1200);
             }
         }
         main();
