@@ -8,20 +8,12 @@
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        body { 
-            font-family: 'Sarabun', sans-serif; 
-            background-color: #0f172a; /* พื้นหลังเข้มสุด */
-        }
-        /* พื้นหลังส่วนหัว น้ำเงินเข้มไล่เฉด */
-        .bg-navy-gradient { 
-            background: linear-gradient(180deg, #1e1b4b 0%, #312e81 100%);
-        }
-        /* กรอบลงข้อมูลสีเทาไล่เฉดนุ่มๆ */
+        body { font-family: 'Sarabun', sans-serif; background-color: #0f172a; }
+        .bg-navy-gradient { background: linear-gradient(180deg, #1e1b4b 0%, #312e81 100%); }
         .gray-card-gradient {
             background: linear-gradient(145deg, #f8fafc 0%, #f1f5f9 100%);
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
         }
-        /* ตกแต่ง Input ให้สะอาดตา */
         .custom-input {
             background-color: #ffffff;
             border: 1px solid #e2e8f0;
@@ -36,10 +28,8 @@
             background: linear-gradient(90deg, #4338ca 0%, #6366f1 100%);
             transition: all 0.3s ease;
         }
-        .btn-update:hover {
-            filter: brightness(1.1);
-            transform: translateY(-1px);
-        }
+        .btn-update:hover { filter: brightness(1.1); transform: translateY(-1px); }
+        .btn-update:disabled { filter: grayscale(1); cursor: not-allowed; transform: none; }
     </style>
 </head>
 <body class="text-slate-700">
@@ -48,15 +38,14 @@
         <!-- Header Section -->
         <div class="bg-navy-gradient pt-12 pb-24 px-6 text-center text-white rounded-b-[4rem] shadow-2xl z-0">
             <div class="relative inline-block mt-4">
-                <div class="w-32 h-32 rounded-full border-[6px] border-white/10 p-1 shadow-2xl mx-auto overflow-hidden">
-                    <img id="displayImg" src="https://via.placeholder.com/150" class="w-full h-full rounded-full object-cover">
+                <div class="w-32 h-32 rounded-full border-[6px] border-white/10 p-1 shadow-2xl mx-auto overflow-hidden bg-slate-800">
+                    <!-- แก้ไข URL รูปภาพสำรองที่นี่ -->
+                    <img id="displayImg" src="https://www.w3schools.com/howto/img_avatar.png" class="w-full h-full rounded-full object-cover">
                 </div>
-                <!-- Status Badge -->
-                <div id="statusBadge" class="absolute bottom-1 right-1 px-3 py-1 rounded-full text-[10px] font-bold shadow-lg border border-white/20">
+                <div id="statusBadge" class="absolute bottom-1 right-1 px-3 py-1 rounded-full text-[10px] font-bold shadow-lg border border-white/20 bg-slate-500">
                     Loading...
                 </div>
             </div>
-            
             <h1 id="displayName" class="text-2xl font-semibold mt-5 tracking-tight">-</h1>
             <p id="displayUid" class="text-indigo-300/60 text-[10px] font-mono mt-1 uppercase tracking-widest">-</p>
         </div>
@@ -64,30 +53,22 @@
         <!-- Content Section (Form) -->
         <div class="px-6 -mt-16 mb-10 z-10">
             <div class="gray-card-gradient rounded-[2.5rem] p-8 space-y-6 border border-white/50">
-                
                 <div class="space-y-1">
                     <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">ชื่อ-นามสกุล</label>
-                    <input type="text" id="name" placeholder="ชื่อของคุณ" 
-                           class="w-full custom-input rounded-2xl px-5 py-3.5 text-slate-800 font-medium">
+                    <input type="text" id="name" placeholder="ชื่อของคุณ" class="w-full custom-input rounded-2xl px-5 py-3.5 text-slate-800 font-medium">
                 </div>
-
                 <div class="space-y-1">
                     <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">เบอร์โทรศัพท์</label>
-                    <input type="tel" id="phone" placeholder="0XXXXXXXXX" 
-                           class="w-full custom-input rounded-2xl px-5 py-3.5 text-slate-800 font-medium">
+                    <input type="tel" id="phone" placeholder="0XXXXXXXXX" class="w-full custom-input rounded-2xl px-5 py-3.5 text-slate-800 font-medium">
                 </div>
-
                 <div class="space-y-1">
                     <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">Gmail</label>
-                    <input type="email" id="email" placeholder="example@gmail.com" 
-                           class="w-full custom-input rounded-2xl px-5 py-3.5 text-slate-800 font-medium">
+                    <input type="email" id="email" placeholder="example@gmail.com" class="w-full custom-input rounded-2xl px-5 py-3.5 text-slate-800 font-medium">
                 </div>
-
                 <div class="grid grid-cols-2 gap-4">
                     <div class="space-y-1">
                         <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">สภ.</label>
-                        <input type="text" id="station" placeholder="ระบุหน่วยงาน" 
-                               class="w-full custom-input rounded-2xl px-5 py-3.5 text-slate-800 font-medium text-center">
+                        <input type="text" id="station" placeholder="ระบุหน่วยงาน" class="w-full custom-input rounded-2xl px-5 py-3.5 text-slate-800 font-medium text-center">
                     </div>
                     <div class="space-y-1">
                         <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">ภาค</label>
@@ -98,13 +79,10 @@
                         </select>
                     </div>
                 </div>
-
-                <button onclick="updateProfile()" id="btnUpdate" 
-                        class="w-full btn-update text-white font-bold py-4 rounded-2xl shadow-xl shadow-indigo-500/20 text-lg mt-4 active:scale-95 transition-all">
+                <button onclick="updateProfile()" id="btnUpdate" class="w-full btn-update text-white font-bold py-4 rounded-2xl shadow-xl shadow-indigo-500/20 text-lg mt-4 active:scale-95 transition-all">
                     อัปเดตข้อมูลโปรไฟล์
                 </button>
             </div>
-            
             <p class="text-center text-slate-500 text-[10px] mt-8 tracking-widest uppercase opacity-50">Profile Update System v2.0</p>
         </div>
     </div>
@@ -127,41 +105,48 @@
         }
 
         async function getUserData() {
-            const profile = await liff.getProfile();
-            document.getElementById('displayUid').innerText = profile.userId;
-            document.getElementById('displayImg').src = profile.pictureUrl;
+            try {
+                const profile = await liff.getProfile();
+                document.getElementById('displayUid').innerText = profile.userId;
+                if (profile.pictureUrl) {
+                    document.getElementById('displayImg').src = profile.pictureUrl;
+                }
 
-            const response = await fetch(GasUrl, {
-                method: 'POST',
-                body: JSON.stringify({ action: 'getUser', userId: profile.userId })
-            });
-            const result = await response.json();
+                const response = await fetch(GasUrl, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'getUser', userId: profile.userId })
+                });
+                const result = await response.json();
 
-            if (result.status === 'success') {
-                const user = result.data;
-                document.getElementById('displayName').innerText = user.name;
-                document.getElementById('name').value = user.name;
-                document.getElementById('phone').value = user.phone;
-                document.getElementById('email').value = user.email || '';
-                document.getElementById('station').value = user.station;
-                document.getElementById('region').value = user.region;
+                if (result.status === 'success') {
+                    const user = result.data;
+                    document.getElementById('displayName').innerText = user.name || 'ไม่ระบุชื่อ';
+                    document.getElementById('name').value = user.name || '';
+                    document.getElementById('phone').value = user.phone || '';
+                    document.getElementById('email').value = user.email || '';
+                    document.getElementById('station').value = user.station || '';
+                    document.getElementById('region').value = user.region || '1';
 
-                const badge = document.getElementById('statusBadge');
-                badge.innerText = user.status;
-                badge.className = user.status === 'Approved' 
-                    ? 'absolute bottom-1 right-1 px-3 py-1 rounded-full text-[10px] font-bold shadow-md bg-emerald-500 text-white' 
-                    : 'absolute bottom-1 right-1 px-3 py-1 rounded-full text-[10px] font-bold shadow-md bg-orange-500 text-white';
+                    const badge = document.getElementById('statusBadge');
+                    badge.innerText = user.status || 'Pending';
+                    badge.className = user.status === 'Approved' 
+                        ? 'absolute bottom-1 right-1 px-3 py-1 rounded-full text-[10px] font-bold shadow-md bg-emerald-500 text-white' 
+                        : 'absolute bottom-1 right-1 px-3 py-1 rounded-full text-[10px] font-bold shadow-md bg-orange-500 text-white';
+                }
+            } catch (error) {
+                console.error("Get User Data Error:", error);
             }
         }
 
         async function updateProfile() {
             const btn = document.getElementById('btnUpdate');
-            const originalText = btn.innerText;
+            const originalText = "อัปเดตข้อมูลโปรไฟล์";
+            
+            // Validate ข้อมูลเบื้องต้น
+            if(!document.getElementById('name').value) return alert("กรุณากรอกชื่อ");
+
             btn.disabled = true;
-            btn.innerHTML = `<span class="flex items-center justify-center">
-                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                กำลังบันทึกข้อมูล...
-            </span>`;
+            btn.innerHTML = `กำลังบันทึกข้อมูล...`;
 
             const payload = {
                 action: 'editUser',
@@ -174,12 +159,20 @@
             };
 
             try {
-                const response = await fetch(GasUrl, { method: 'POST', body: JSON.stringify(payload) });
-                const result = await response.json();
-                alert(result.message);
+                const response = await fetch(GasUrl, { 
+                    method: 'POST', 
+                    mode: 'no-cors', // เพิ่มโหมดนี้หากติดปัญหา CORS ในบางกรณี แต่ปกติ GAS ไม่ต้องใช้
+                    body: JSON.stringify(payload) 
+                });
+                
+                // หมายเหตุ: ถ้าใช้ no-cors จะอ่าน response.json() ไม่ได้ 
+                // แต่ถ้าตั้งค่า GAS ถูกต้อง (Anyone) ให้เอา mode: 'no-cors' ออก
+                
+                alert("ส่งคำขออัปเดตเรียบร้อยแล้ว");
                 location.reload();
             } catch (err) {
-                alert("เกิดข้อผิดพลาดในการเชื่อมต่อ");
+                console.error("Update Error:", err);
+                alert("เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่อีกครั้ง");
                 btn.disabled = false;
                 btn.innerText = originalText;
             }
