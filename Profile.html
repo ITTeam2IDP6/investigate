@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>โปรไฟล์ของฉัน</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Sarabun', sans-serif; background-color: #f8fafc; }
+        .profile-gradient { background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%); }
+    </style>
+</head>
+<body>
+    <div class="max-w-md mx-auto min-h-screen flex flex-col">
+        <!-- Header Section -->
+        <div class="profile-gradient pt-10 pb-20 px-6 text-center text-white rounded-b-[3rem] shadow-xl">
+            <div class="relative inline-block">
+                <img id="displayImg" src="https://via.placeholder.com/150" class="w-32 h-32 rounded-full border-4 border-white shadow-lg object-cover mx-auto">
+                <div id="statusBadge" class="absolute bottom-1 right-1 px-3 py-1 rounded-full text-[10px] font-bold shadow-md">
+                    Loading...
+                </div>
+            </div>
+            <h1 id="displayName" class="text-2xl font-bold mt-4">-</h1>
+            <p id="displayUid" class="text-indigo-200 text-[10px] font-mono mt-1 opacity-70">-</p>
+        </div>
+
+        <!-- Content Section -->
+        <div class="px-6 -mt-10 mb-10 flex-grow">
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-100 p-6 space-y-5">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">ชื่อ-นามสกุล</label>
+                    <input type="text" id="name" class="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-slate-700 focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">เบอร์โทรศัพท์</label>
+                    <input type="tel" id="phone" class="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-slate-700 focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Gmail</label>
+                    <input type="email" id="email" class="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-slate-700 focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">สภ.</label>
+                        <input type="text" id="station" class="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-slate-700 focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">ภาค</label>
+                        <select id="region" class="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-slate-700 focus:ring-2 focus:ring-indigo-500">
+                            <option value="1">ภาค 1</option><option value="2">ภาค 2</option><option value="3">ภาค 3</option>
+                            <option value="4">ภาค 4</option><option value="5">ภาค 5</option><option value="6">ภาค 6</option>
+                            <option value="7">ภาค 7</option><option value="8">ภาค 8</option><option value="9">ภาค 9</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button onclick="updateProfile()" id="btnUpdate" class="w-full profile-gradient text-white font-bold py-4 rounded-2xl shadow-lg transition active:scale-95 mt-4">
+                    อัปเดตข้อมูลโปรไฟล์
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const LiffId = "2009632664-1LuqGmDX"; 
+        const GasUrl = "https://script.google.com/macros/s/AKfycbwuQGtRMZG1LhpuM4jBKHdjDwzlENSKmqrAyWAtGKPOBrPfXeKX_AS5KIGBXgg_m3xunw/exec";
+
+        async function main() {
+            await liff.init({ liffId: LiffId });
+            if (!liff.isLoggedIn()) { liff.login(); }
+            else { getUserData(); }
+        }
+
+        async function getUserData() {
+            const profile = await liff.getProfile();
+            document.getElementById('displayUid').innerText = profile.userId;
+            document.getElementById('displayImg').src = profile.pictureUrl;
+
+            const response = await fetch(GasUrl, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'getUser', userId: profile.userId })
+            });
+            const result = await response.json();
+
+            if (result.status === 'success') {
+                const user = result.data;
+                document.getElementById('displayName').innerText = user.name;
+                document.getElementById('name').value = user.name;
+                document.getElementById('phone').value = user.phone;
+                document.getElementById('email').value = user.email;
+                document.getElementById('station').value = user.station;
+                document.getElementById('region').value = user.region;
+
+                const badge = document.getElementById('statusBadge');
+                badge.innerText = user.status;
+                badge.className = user.status === 'Approved' ? 'absolute bottom-1 right-1 px-3 py-1 rounded-full text-[10px] font-bold shadow-md bg-green-500 text-white' : 'absolute bottom-1 right-1 px-3 py-1 rounded-full text-[10px] font-bold shadow-md bg-amber-500 text-white';
+            }
+        }
+
+        async function updateProfile() {
+            const btn = document.getElementById('btnUpdate');
+            btn.disabled = true;
+            btn.innerText = "กำลังบันทึก...";
+
+            const payload = {
+                action: 'editUser', // ใช้ฟังก์ชันเดียวกับ Admin เพราะโครงสร้างเดียวกัน
+                userId: document.getElementById('displayUid').innerText,
+                name: document.getElementById('name').value,
+                phone: document.getElementById('phone').value,
+                email: document.getElementById('email').value,
+                station: document.getElementById('station').value,
+                region: document.getElementById('region').value
+            };
+
+            try {
+                const response = await fetch(GasUrl, { method: 'POST', body: JSON.stringify(payload) });
+                const result = await response.json();
+                alert(result.message);
+                location.reload();
+            } catch (err) {
+                alert("เกิดข้อผิดพลาด");
+                btn.disabled = false;
+                btn.innerText = "อัปเดตข้อมูลโปรไฟล์";
+            }
+        }
+        main();
+    </script>
+</body>
+</html>
